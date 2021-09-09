@@ -1,0 +1,68 @@
+.table > :not(caption) > * > * {
+  border-bottom: none;
+}
+
+.table tr {
+  border-bottom: 1px solid lightgray;
+}
+
+tr {
+  display: -ms-flexbox;
+  display: flex;
+}
+
+select:not(:-internal-list-box) {
+  overflow: auto !important;
+  height: 50px;
+}
+
+select > option {
+  display: block;
+  height: 50px;
+  overflow: auto;
+}
+
+@media (min-width: 768px) {
+  .buttons-column :first-child > * {
+    width: 48%;
+  }
+}
+
+.row {
+  margin-left: 0;
+}
+
+.table #table > * {
+  vertical-align: middle;
+}
+
+.table .carWrapper > * {
+  margin: auto 0;
+}
+
+.add-car-list {
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.add-car-list > * {
+  margin-right: 2%;
+}
+
+.add-car-list .year-input {
+  font-size: 13px;
+}
+
+.add-car-list .form-select-wrapper {
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.add-car-list .form-select-wrapper > * {
+  width: 100%;
+}
+
+.button-wrapper {
+  height: 80%;
+}
+/*# sourceMappingURL=style.css.map */
