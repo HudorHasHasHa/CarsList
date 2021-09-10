@@ -69,13 +69,14 @@ const getReverseSortOrder = (prop) => {
 cars.sort(getSortOrder("brand"))
 
 //*** TEMPLATES ***//
+let uniqueId = Object.keys(listData).length;
 let counter = 0;
-const tableItemsTemplate = (brand, model, year) => {
+const tableItemsTemplate = (uniqueId, brand, model, year) => {
   counter++;
   // <td class="carCounter" scope="row">${counter}</td>
   return `
     <tr class="carWrapper" id="${counter}">
-      <td valign="center" class="col-3 col-sm-3" >${brand}</td>
+      <td valign="center" class="col-3 col-sm-3" id="${uniqueId}">${brand}</td>
       <td valign="center" class="col-3 col-sm-3" >${model}</td>
       <td valign="center" class="col-3 col-sm-3" >${year}</td>
       <td valign="center" class=" col-3 col-sm-3 buttons-column"><div class="d-grid gap-2 d-md-block">
@@ -137,14 +138,16 @@ submitButton.addEventListener('click', function (event) {
   let modelVal = dropdownModels.value;
   let yearVal = yearDropdown.value;
   listData[`${parseInt(counter) + 1}`] = {
+    "id": ++uniqueId,
     "brand": `${brandVal}`,
     "model": `${modelVal}`,
     "year": `${yearVal}`
   }
-  table.insertAdjacentHTML('beforeend', tableItemsTemplate(brandVal, modelVal, yearVal));
-  // console.log(listData);
+  table.insertAdjacentHTML('beforeend', tableItemsTemplate(uniqueId, brandVal, modelVal, yearVal));
+  console.log(listData);
   deleteItem();
   editItem();
+  saveItem();
 })
 
 // Delete Item //
@@ -153,26 +156,28 @@ const deleteItem = () => {
   for (let button of deleteButtons) {
     let mockList = [];
     button.addEventListener('click', function () {
-      // console.log()
       for(let item in listData){
-        if(listData[item].brand === button.parentNode.parentNode.parentNode.children[0].innerHTML && 
-          listData[item].model === button.parentNode.parentNode.parentNode.children[1].innerHTML&& 
-          listData[item].year === button.parentNode.parentNode.parentNode.children[2].innerHTML){
+        console.log(listData[item].id);
+        console.log();
+        if(parseInt(listData[item].id) === parseInt(button.parentNode.parentNode.parentNode.children[0].id)){
+        // if(listData[item].brand === button.parentNode.parentNode.parentNode.children[0].innerHTML &&
+        //   listData[item].brand.id === button.parentNode.parentNode.parentNode.id && 
+        //   listData[item].model === button.parentNode.parentNode.parentNode.children[1].innerHTML&& 
+        //   listData[item].year === button.parentNode.parentNode.parentNode.children[2].innerHTML){
+            console.log("hello")
             delete listData[item];
-            
           }
       }
       for(let el in listData){
-          mockList.push(listData[el])
+        mockList.push(listData[el])
       }
       console.log(mockList);
       for (var member in listData) delete listData[member];
       for(let i = 1; i < mockList.length+1 ; i++){
         listData[i] = mockList[i-1];
       }
-      
-      this.parentNode.parentNode.parentNode.remove();
       console.log(listData);
+      this.parentNode.parentNode.parentNode.remove();
       sortitems();
       // let items = document.getElementsByClassName("carCounter");
       // for (let i = 0; i < items.length; i++) {
@@ -204,6 +209,7 @@ const editItem = () => {
 
       // modalContent.innerHTML = '';
       // modalContent.insertAdjacentHTML('beforeend', editTemplate());
+      console.log(this.parentNode.parentNode.parentNode.children[0].id);
       brand = this.parentNode.parentNode.parentNode.children[0].innerHTML;
       model = this.parentNode.parentNode.parentNode.children[1].innerHTML;
       year = this.parentNode.parentNode.parentNode.children[2].innerHTML;
@@ -220,7 +226,7 @@ const editItem = () => {
           // console.log(cars[car].brand);
           // console.log(brand);
           modalYear.value = year;
-          modalYear.parentNode.parentNode.parentNode.id = this.parentNode.parentNode.parentNode.id;
+          modalYear.parentNode.parentNode.parentNode.id = this.parentNode.parentNode.parentNode.children[0].id;
         }
       }
       modalBrands.dispatchEvent(setdefault);
@@ -232,27 +238,32 @@ const editItem = () => {
 const saveItem = () => {
   saveButton.addEventListener('click', function (event) {
     event.preventDefault();
-    console.log(modalYear.parentNode.parentNode.parentNode.id);
     let currentTable = table.children;
     //getting edited element
     for (let element of currentTable) {
-      if (element.id === modalYear.parentNode.parentNode.parentNode.id) {
-        // console.log(element.id)
+      // console.log(element.children)
+      console.log(element.children[0].id);
+      console.log(modalYear.parentNode.parentNode.parentNode.id);
+      if (element.children[0].id === modalYear.parentNode.parentNode.parentNode.id) {
         // console.log(modalYear.parentNode.parentNode.parentNode.id)
         //changing item appeareance
+        // console.log(element.children[0].innerHTML, element.children[1].innerHTML, element.children[2].innerHTML);
+        // console.log(listData);
         // element.children[0].innerHTML = modalBrands.value
         // element.children[1].innerHTML = modalModels.value
         // element.children[2].innerHTML = modalYear.value
-        //
+        
         // console.log(listData);
-        listData[`${element.id}`] = {
-          "brand": `${modalBrands.value}`,
-          "model": `${modalModels.value}`,
-          "year": `${modalYear.value}`
-        };
+          listData[parseInt(modalYear.parentNode.parentNode.parentNode.id)].brand=  `${modalBrands.value}`;
+          listData[parseInt(modalYear.parentNode.parentNode.parentNode.id)].model= `${modalModels.value}`;
+          listData[parseInt(modalYear.parentNode.parentNode.parentNode.id)].year= `${modalYear.value}`;
+        
+        console.log(element.children[0].innerHTML, element.children[1].innerHTML, element.children[2].innerHTML);
+        console.log(listData);
         // console.log(listData);
         reloadList(listData);
         modal.style.display = "none";
+        sortYear.value = "-";
       }
     }
 
@@ -348,10 +359,22 @@ const filterModelsFunc = () => {
 const reloadList = (list) => {
   counter = 0;
   table.innerHTML = '';
-  // console.log(list);
-  for (let item in list) {
-    table.insertAdjacentHTML('beforeend', tableItemsTemplate(list[item].brand, list[item].model, list[item].year));
+  let mockList = [];
+  for(let el in list){
+    mockList.push(list[el])
   }
+  console.log(mockList);
+  for (var member in list) delete list[member];
+  for(let i = 1; i < mockList.length+1 ; i++){
+    list[i] = mockList[i-1];
+  }
+  console.log(list);
+  for (let item in list) {
+    if(item>=1){
+    table.insertAdjacentHTML('beforeend', tableItemsTemplate(list[item].id, list[item].brand, list[item].model, list[item].year));
+    }
+  }
+  console.log(list);
   deleteItem();
   editItem();
 }
@@ -360,7 +383,7 @@ const reloadList = (list) => {
 const appInit = () => {
   // Render default cars
   for (let item in listData) {
-    table.insertAdjacentHTML('beforeend', tableItemsTemplate(listData[item].brand, listData[item].model, listData[item].year))
+    table.insertAdjacentHTML('beforeend', tableItemsTemplate(listData[item].id, listData[item].brand, listData[item].model, listData[item].year))
   }
   // Render brands options
   for (let car in cars) {
@@ -368,10 +391,10 @@ const appInit = () => {
   }
   // Setting dropdownModels content to default selected brands option :)
   const setDefaultModels = new Event("change");
+  saveItem();
   yearTemplate();
   deleteItem();
   editItem();
-  saveItem();
   dropdownBrands.dispatchEvent(setDefaultModels);
   filterModelsFunc();
   sortitems();
