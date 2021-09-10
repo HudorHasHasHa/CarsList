@@ -46,8 +46,18 @@ select {
     }
   }
 }
+.modal-title{
+  font-size: 1.1em;
+  font-weight: bold;
+}
+.add-car-label{
+  font-size: 1.1em;
+  font-weight: bold;
+  border-bottom: 1px solid lightgray;
+}
 
 .add-car-list{
+  padding-bottom: 30px;
   display: flex;
   > * {
     margin-right: 2%;

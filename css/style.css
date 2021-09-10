@@ -40,7 +40,19 @@ select > option {
   margin: auto 0;
 }
 
+.modal-title {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.add-car-label {
+  font-size: 1.1em;
+  font-weight: bold;
+  border-bottom: 1px solid lightgray;
+}
+
 .add-car-list {
+  padding-bottom: 30px;
   display: -ms-flexbox;
   display: flex;
 }

@@ -14,7 +14,7 @@
 <body>
   <section class="container">
     <div class="container-fluid">
-      <label>Add a car to list</label>
+      <label class="add-car-label">Dodawanie samochodu do listy</label>
       <form class="add-car-list" id="tableForm" method="post">
         <div class="align-items-center col-2">
           <div class="col-auto">
@@ -40,8 +40,8 @@
             <select data-display="static" class="select-dropdowns" id="formYear"></select>
           </div>
         </div>
-        <div class="d-grid gap-2 d-md-block">
-          <button type="submit" class="btn btn-primary button-wrapper" id="submit">dodaj fure</button>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary button-wrapper align-self-end" id="submit">dodaj do listy</button>
         </div>
       </form>
       <div class="table-responsive">
@@ -76,7 +76,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="myModalLabel">Window of edition</h5>
+          <h5 class="modal-title" id="myModalLabel">Edit</h5>
           <button type="button" class="btn-close" id="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" id="modal-content">

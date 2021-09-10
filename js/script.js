@@ -152,11 +152,11 @@ const modalBrands = document.getElementById("modalBrands");
 const modalModels = document.getElementById("modalModels");
 const modalYear = document.getElementById("modalYear");
 const saveButton = document.getElementById("saveButton");
+let modal = (document.getElementById("myModal"));
 let model;
 const editItem = () => {
   for(let button of editButtons){
     button.addEventListener('click', function(){
-      let modal = (document.getElementById("myModal"));
       modal.style.display = "block";
       modal.style.opacity = "1";
 
@@ -179,32 +179,33 @@ const editItem = () => {
         }
         modalBrands.dispatchEvent(setdefault);
       }
-
-      saveButton.addEventListener('click', function(event){
-        event.preventDefault();
-        // console.log(modalYear.parentNode.parentNode.parentNode.id);
-        let currentTable = table.children;
-        //getting edited element
-        for(let element of currentTable){
-          if(element.id == modalYear.parentNode.parentNode.parentNode.id){
-            //changing item appeareance
-            // element.children[0].innerHTML = modalBrands.value
-            // element.children[1].innerHTML = modalModels.value
-            // element.children[2].innerHTML = modalYear.value
-            //
-            listData[`${element.id}`] = {
-              "brand": `${modalBrands.value}`,
-              "model": `${modalModels.value}`,
-              "year": `${modalYear.value}`
-            };
-            console.log(listData);
-            reloadList(listData);
-            modal.style.display = "none";
-          }
-        }
-      });
     });
   }
+}
+const saveItem = () => {
+  saveButton.addEventListener('click', function(event){
+    event.preventDefault();
+    // console.log(modalYear.parentNode.parentNode.parentNode.id);
+    let currentTable = table.children;
+    //getting edited element
+    for(let element of currentTable){
+      if(element.id === modalYear.parentNode.parentNode.parentNode.id){
+        //changing item appeareance
+        // element.children[0].innerHTML = modalBrands.value
+        // element.children[1].innerHTML = modalModels.value
+        // element.children[2].innerHTML = modalYear.value
+        //
+        listData[`${element.id}`] = {
+          "brand": `${modalBrands.value}`,
+          "model": `${modalModels.value}`,
+          "year": `${modalYear.value}`
+        };
+        console.log(listData);
+        reloadList(listData);
+        modal.style.display = "none";
+      }
+    }
+  });
 }
 
 modalBrands.addEventListener('change', function(){
@@ -226,6 +227,7 @@ console.log(listData);
 // Reload list
 const reloadList = (list) => {
   console.log(list);
+  counter=0;
   table.innerHTML = '';
   for(let item in list){
     console.log();
@@ -250,6 +252,7 @@ const appInit = () => {
   yearTemplate();
   deleteItem();
   editItem();
+  saveItem();
   dropdownBrands.dispatchEvent(setDefaultModels);
 }
 appInit();
