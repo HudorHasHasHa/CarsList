@@ -11,6 +11,7 @@ const sortYear = document.getElementById("sortYear");
 const deleteButtons = document.getElementsByClassName("delete-button");
 const editButtons = document.getElementsByClassName("edit-button");
 const closeModal = document.getElementById("btn-close");
+const filterModels = document.getElementById("filterModels");
 // SELECTORS ENDS //
 
 //*** GETTING INITIAL DATA ***//
@@ -135,10 +136,6 @@ submitButton.addEventListener('click', function (event) {
   editItem();
 })
 
-sortBrand.addEventListener('click', function () {
-
-})
-
 // Delete Item //
 const deleteItem = () => {
   // let carsIds = document.getElementsByClassName("carCounter")
@@ -155,7 +152,7 @@ const deleteItem = () => {
     });
   }
 }
-
+// Edit item / pushing this data into edit modal dropdowns
 const modalBrands = document.getElementById("modalBrands");
 const modalModels = document.getElementById("modalModels");
 const modalYear = document.getElementById("modalYear");
@@ -190,6 +187,7 @@ const editItem = () => {
     });
   }
 }
+// Save item fun
 const saveItem = () => {
   saveButton.addEventListener('click', function (event) {
     event.preventDefault();
@@ -213,6 +211,10 @@ const saveItem = () => {
         modal.style.display = "none";
       }
     }
+
+    //reset filter value to avoid showing not fitted elements in filtered list
+    //different option would be diptachEvent into filter eventListener but i wanted to differentiate these functions :)
+    filterModels.value = "";
   });
 }
 
@@ -231,7 +233,7 @@ modalBrands.addEventListener('change', function () {
     }
   }
 })
-
+// Sort Aplhabetically fun for brands/models
 const sortAlphabetically = (list, prop) => {
   let orderedList = [];
   for (let item in list) {
@@ -270,11 +272,32 @@ sortYear.addEventListener('change', function (event) {
   }
 });
 
+// Dynamically filter models
+const filterModelsFunc = () => {
+  filterModels.addEventListener('keyup', function(){
+    let filteredModels=[];
+    for(let item in listData){
+      // I choosed startsWith(), but includes() is also an option here if we wanna see all models that contains certain phrase.
+      if((listData[item].model).toLowerCase().startsWith(filterModels.value)){
+        filteredModels.push(listData[item])
+      }
+    }
+    let tableContent = table.children;
+    for(let i=0; i<tableContent.length ; i++){
+      if((tableContent[i].children[1].innerHTML).toLowerCase().startsWith(filterModels.value)){
+        console.log(tableContent[i])
+        console.log(tableContent[i].id);
+        tableContent[i].style.display = "flex";
+      }
+      else if (!(tableContent[i].children[1].innerHTML).toLowerCase().startsWith(filterModels.value)){
+        tableContent[i].style.display = "none";
+      }
+    }
+  });
+}
 
-console.log(listData);
 // Reload list
 const reloadList = (list) => {
-  console.log(list);
   counter = 0;
   table.innerHTML = '';
   for (let item in list) {
@@ -302,5 +325,6 @@ const appInit = () => {
   editItem();
   saveItem();
   dropdownBrands.dispatchEvent(setDefaultModels);
+  filterModelsFunc();
 }
 appInit();
