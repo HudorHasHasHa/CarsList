@@ -7,6 +7,7 @@ const submitButton = document.getElementById("submit");
 const yearDropdown = document.getElementById("formYear");
 const sortBrand = document.getElementById("sortBrand");
 const sortModel = document.getElementById("sortModel");
+const sortYear = document.getElementById("sortYear");
 const deleteButtons = document.getElementsByClassName("delete-button");
 const editButtons = document.getElementsByClassName("edit-button");
 const closeModal = document.getElementById("btn-close");
@@ -36,6 +37,17 @@ const getSortOrder = (prop) => {
     if (a[prop] > b[prop]) {
       return 1;
     } else if (a[prop] < b[prop]) {
+      return -1;
+    }
+    return 0;
+  }
+}
+const getReverseSortOrder = (prop) => {
+  return function (a, b) {
+    if (a[prop] < b[prop]) {
+      return 1;
+    }
+    else if (a[prop] > b[prop]) {
       return -1;
     }
     return 0;
@@ -73,8 +85,8 @@ const yearTemplate = () => {
     <option value="${year}">${year}</option>
   `;
   let currentYear = new Date().getFullYear()
-  for(let i = 0 ; i < 100 ; i++){
-    html += htmlTemplate(currentYear-i);
+  for (let i = 0; i < 100; i++) {
+    html += htmlTemplate(currentYear - i);
   }
   yearDropdown.insertAdjacentHTML('beforeend', html);
   modalYear.insertAdjacentHTML('beforeend', html);
@@ -88,33 +100,33 @@ const dropdownModelsTemplate = (model) => {
 
 //*** EVENT LISTENERS ***//
 // Close modal
-closeModal.addEventListener('click', function(event){
+closeModal.addEventListener('click', function (event) {
   event.preventDefault();
   let modal = (document.getElementById("myModal"));
   modal.style.display = "none";
 })
 
 // Setting the dropdownModels content depending on which Brand is selected :)
-dropdownBrands.addEventListener('change', function(event){
+dropdownBrands.addEventListener('change', function (event) {
   event.preventDefault();
-  for(let car in cars){
-    if(dropdownBrands.value == cars[car].brand){
+  for (let car in cars) {
+    if (dropdownBrands.value == cars[car].brand) {
       dropdownModels.innerHTML = '';
-      for(let model in cars[car].models){
+      for (let model in cars[car].models) {
         dropdownModels.insertAdjacentHTML('beforeend', dropdownModelsTemplate(cars[car].models[model]));
       }
     }
   }
 })
 
-submitButton.addEventListener('click', function(event){
+submitButton.addEventListener('click', function (event) {
   event.preventDefault();
   let brandVal = dropdownBrands.value;
   let modelVal = dropdownModels.value;
   let yearVal = yearDropdown.value;
-  listData[`${parseInt(counter)+1}`] = {
+  listData[`${parseInt(counter) + 1}`] = {
     "brand": `${brandVal}`,
-    "model":  `${modelVal}`,
+    "model": `${modelVal}`,
     "year": `${yearVal}`
   }
   table.insertAdjacentHTML('beforeend', tableItemsTemplate(brandVal, modelVal, yearVal));
@@ -123,30 +135,26 @@ submitButton.addEventListener('click', function(event){
   editItem();
 })
 
-sortBrand.addEventListener('click', function(){
+sortBrand.addEventListener('click', function () {
 
 })
 
 // Delete Item //
-const deleteItem = () =>{
+const deleteItem = () => {
   // let carsIds = document.getElementsByClassName("carCounter")
-  for(let button of deleteButtons){
-    button.addEventListener('click', function(){
+  for (let button of deleteButtons) {
+    button.addEventListener('click', function () {
       delete listData[this.parentNode.parentNode.parentNode.id];
       this.parentNode.parentNode.parentNode.remove();
       let items = document.getElementsByClassName("carCounter");
-      for(let i = 0; i < items.length; i++){
-        items[i].innerHTML = i+1;
+      for (let i = 0; i < items.length; i++) {
+        items[i].innerHTML = i + 1;
       }
       counter = (Object.keys(listData)[parseInt(Object.keys(listData).length) - 1]);
       console.log(listData);
     });
   }
 }
-// Edit Item //
-// const editTemplate = (brand, model, year) => {
-//   return 
-// }
 
 const modalBrands = document.getElementById("modalBrands");
 const modalModels = document.getElementById("modalModels");
@@ -155,8 +163,8 @@ const saveButton = document.getElementById("saveButton");
 let modal = (document.getElementById("myModal"));
 let model;
 const editItem = () => {
-  for(let button of editButtons){
-    button.addEventListener('click', function(){
+  for (let button of editButtons) {
+    button.addEventListener('click', function () {
       modal.style.display = "block";
       modal.style.opacity = "1";
 
@@ -172,7 +180,7 @@ const editItem = () => {
       for (let car in cars) {
         modalBrands.insertAdjacentHTML('beforeend', brandsTemplate(cars[car].brand));
         const setdefault = new Event("change");
-        if((cars[car].brand).toLowerCase()===brand.toLowerCase()){
+        if ((cars[car].brand).toLowerCase() === brand.toLowerCase()) {
           modalBrands.value = brand;
           modalYear.value = year;
           modalYear.parentNode.parentNode.parentNode.id = this.parentNode.parentNode.parentNode.id;
@@ -183,13 +191,13 @@ const editItem = () => {
   }
 }
 const saveItem = () => {
-  saveButton.addEventListener('click', function(event){
+  saveButton.addEventListener('click', function (event) {
     event.preventDefault();
     // console.log(modalYear.parentNode.parentNode.parentNode.id);
     let currentTable = table.children;
     //getting edited element
-    for(let element of currentTable){
-      if(element.id === modalYear.parentNode.parentNode.parentNode.id){
+    for (let element of currentTable) {
+      if (element.id === modalYear.parentNode.parentNode.parentNode.id) {
         //changing item appeareance
         // element.children[0].innerHTML = modalBrands.value
         // element.children[1].innerHTML = modalModels.value
@@ -208,28 +216,68 @@ const saveItem = () => {
   });
 }
 
-modalBrands.addEventListener('change', function(){
-  for(let car in cars){
-    if(modalBrands.value == cars[car].brand){
+modalBrands.addEventListener('change', function () {
+  for (let car in cars) {
+    if (modalBrands.value == cars[car].brand) {
       modalModels.innerHTML = '';
-      for(let model in cars[car].models){
+      for (let model in cars[car].models) {
         modalModels.insertAdjacentHTML('beforeend', dropdownModelsTemplate(cars[car].models[model]));
       }
-      for(let item in cars[car].models){
-        if((cars[car].models[item]).toLowerCase()===model.toLowerCase()){
+      for (let item in cars[car].models) {
+        if ((cars[car].models[item]).toLowerCase() === model.toLowerCase()) {
           modalModels.value = cars[car].models[item];
         }
       }
     }
   }
 })
+
+const sortAlphabetically = (list, prop) => {
+  let orderedList = [];
+  for (let item in list) {
+    orderedList.push(list[item]);
+  }
+  orderedList.sort(getSortOrder(`${prop}`));
+  reloadList(orderedList);
+}
+
+sortBrand.addEventListener('click', function (event) {
+  event.preventDefault();
+  sortAlphabetically(listData, "brand");
+})
+
+sortModel.addEventListener('click', function (event) {
+  event.preventDefault();
+  sortAlphabetically(listData, "model");
+})
+
+sortYear.addEventListener('change', function (event) {
+  event.preventDefault();
+  if (sortYear.value === "old") {
+    let orderedList = [];
+    for (let item in listData) {
+      orderedList.push(listData[item]);
+    }
+    orderedList.sort(getSortOrder(`year`));
+    reloadList(orderedList);
+  } else if (sortYear.value === "new") {
+    let orderedList = [];
+    for (let item in listData) {
+      orderedList.push(listData[item]);
+    }
+    orderedList.sort(getReverseSortOrder(`year`));
+    reloadList(orderedList);
+  }
+});
+
+
 console.log(listData);
 // Reload list
 const reloadList = (list) => {
   console.log(list);
-  counter=0;
+  counter = 0;
   table.innerHTML = '';
-  for(let item in list){
+  for (let item in list) {
     console.log();
     table.insertAdjacentHTML('beforeend', tableItemsTemplate(list[item].brand, list[item].model, list[item].year));
   }

@@ -55,13 +55,19 @@
               <th class="col-3"></th>
             </tr>
             <tr>
-              <th class="col-3 col-sm-3">
+              <th class="col-3 col-sm-3 d-flex">
                 <button type="button" class="btn btn-light" id="sortBrand">sortuj a-z</button>
               </th>
-              <th class="col-3 col-sm-3">
+              <th class="col-3 col-sm-3 d-flex">
                 <button type="button" class="btn btn-light" id="sortModel">sortuj a-z</button>
               </th>
-              <th class="col-3 col-sm-3">sortuj od <select></select></th>
+              <th class="col-3 col-sm-3 d-flex yearWrapper">sortuj od 
+                <select id="sortYear" default="">
+                  <option>-</option>
+                  <option value="new">najnowszych </option>
+                  <option value="old">najstarszych</option>
+                </select>
+              </th>
               <th class="col-3"></th>
             </tr>
           </thead>
