@@ -137,10 +137,7 @@ submitButton.addEventListener('click', function (event) {
     "model": `${modelVal}`,
     "year": `${yearVal}`
   }
-  table.insertAdjacentHTML('beforeend', tableItemsTemplate(uniqueId, brandVal, modelVal, yearVal));
-  deleteItem();
-  editItem();
-  saveItem();
+  reloadOnChange(listData);
 })
 
 // Delete Item //
@@ -148,10 +145,7 @@ const deleteItem = () => {
   for (let button of deleteButtons) {
     button.addEventListener('click', function () {
       for (let item in listData) {
-        // console.log(listData[item].id);
-        // console.log(button.parentNode.parentNode.parentNode.children[0])
         if (parseInt(listData[item].id) === parseInt(button.parentNode.parentNode.parentNode.children[0].id)) {
-          //deleting item from listdata
           delete listData[item];
         }
       }
@@ -211,6 +205,7 @@ const editItem = () => {
       const setdefault = new Event("change");
       for (let car in cars) {
         modalBrands.insertAdjacentHTML('beforeend', brandsTemplate(cars[car].brand));
+        modalBrands.value = '';
         modalBrands.value = this.parentNode.parentNode.parentNode.children[0].innerHTML;
       }
       for (let car in cars) {
@@ -300,6 +295,7 @@ const sortItems = () => {
   })
 
   sortModel.addEventListener('click', function () {
+    console.log(listData);
     let items, itemsArr = [], itemsCopy;
     for (let item in table.children) {
       if (table.children[item].children) {
@@ -396,9 +392,24 @@ const filterModelsFunc = () => {
   });
 }
 
+document.onkeydown = function(evt) {
+  evt = evt || window.event;
+  var isEscape = false;
+  if ("key" in evt) {
+    isEscape = (evt.key === "Escape" || evt.key === "Esc");
+  } else {
+    isEscape = (evt.keyCode === 27);
+  }
+  if (isEscape) {
+    let modal = (document.getElementById("myModal"));
+    modal.style.display = "none";
+  }
+};
+
 // APP INIT
 const appInit = () => {
   // Render default cars
+  table.innerHTML = '';
   for (let item in listData) {
     table.insertAdjacentHTML('beforeend', tableItemsTemplate(listData[item].id, listData[item].brand, listData[item].model, listData[item].year))
   }
@@ -408,12 +419,12 @@ const appInit = () => {
   }
   // Setting dropdownModels content to default selected brands option :)
   const setDefaultModels = new Event("change");
-  saveItem();
   yearTemplate();
   deleteItem();
-  editItem();
   dropdownBrands.dispatchEvent(setDefaultModels);
   filterModelsFunc();
   sortItems();
+  editItem();
+  saveItem();
 }
 appInit();
