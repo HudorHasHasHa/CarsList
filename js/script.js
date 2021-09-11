@@ -29,7 +29,7 @@ function recreateNode(el, withChildren) {
 let listData = {};
 const listDataResponse = await axios.get('../initialModels.json')
   .catch(error => {
-    // console.log(error);
+    console.log(error);
   })
 listData = listDataResponse.data;
 
@@ -41,7 +41,7 @@ await fetch('../modelOptions.json')
     return cars = data;
   })
   .catch(error => {
-    // console.log(error);
+    console.log(error);
   })
 // I created arrowFunc to sort the responsed data, because I couldnt find sorted one in net :o
 const getSortOrder = (prop) => {
@@ -144,7 +144,6 @@ submitButton.addEventListener('click', function (event) {
     "year": `${yearVal}`
   }
   table.insertAdjacentHTML('beforeend', tableItemsTemplate(uniqueId, brandVal, modelVal, yearVal));
-  console.log(listData);
   deleteItem();
   editItem();
   saveItem();
@@ -154,40 +153,52 @@ submitButton.addEventListener('click', function (event) {
 const deleteItem = () => {
   // let carsIds = document.getElementsByClassName("carCounter")
   for (let button of deleteButtons) {
-    let mockList = [];
     button.addEventListener('click', function () {
-      for(let item in listData){
-        console.log(listData[item].id);
-        console.log();
-        if(parseInt(listData[item].id) === parseInt(button.parentNode.parentNode.parentNode.children[0].id)){
-        // if(listData[item].brand === button.parentNode.parentNode.parentNode.children[0].innerHTML &&
-        //   listData[item].brand.id === button.parentNode.parentNode.parentNode.id && 
-        //   listData[item].model === button.parentNode.parentNode.parentNode.children[1].innerHTML&& 
-        //   listData[item].year === button.parentNode.parentNode.parentNode.children[2].innerHTML){
-            console.log("hello")
-            delete listData[item];
-          }
+      for (let item in listData) {
+        // console.log(listData[item].id);
+        // console.log(button.parentNode.parentNode.parentNode.children[0])
+        if (parseInt(listData[item].id) === parseInt(button.parentNode.parentNode.parentNode.children[0].id)) {
+          //deleting item from listdata
+          delete listData[item];
+        }
       }
-      for(let el in listData){
-        mockList.push(listData[el])
-      }
-      console.log(mockList);
-      for (var member in listData) delete listData[member];
-      for(let i = 1; i < mockList.length+1 ; i++){
-        listData[i] = mockList[i-1];
-      }
-      console.log(listData);
-      this.parentNode.parentNode.parentNode.remove();
-      sortitems();
-      // let items = document.getElementsByClassName("carCounter");
-      // for (let i = 0; i < items.length; i++) {
-      //   items[i].innerHTML = i + 1;
-      //   console.log(items[i]);
-      // }
-      counter = (Object.keys(listData)[parseInt(Object.keys(listData).length) - 1]);
+
       // console.log(listData);
+      // then deleting table row
+      this.parentNode.parentNode.parentNode.remove();
+      let items = document.getElementsByClassName("carCounter");
+      for (let i = 0; i < items.length; i++) {
+        items[i].innerHTML = i + 1;
+        console.log(items[i]);
+      }
+      // setting counter to listdata length to prevent duplicating
+      counter = (Object.keys(listData)[parseInt(Object.keys(listData).length) - 1]);
+      reloadOnChange(listData);
     });
   }
+}
+
+const reloadOnChange = (list) => {
+  let mockList = [];
+  table.innerHTML = '';
+  for (let el in list) {
+    mockList.push(listData[el])
+  }
+  console.log(mockList);
+  for (var member in list) delete list[member];
+  for (let item in mockList) {
+    list[parseInt((mockList[item].id))] = mockList[item];
+  }
+  console.log(list);
+  for (let item in list) {
+    if (item >= 1) {
+      table.insertAdjacentHTML('beforeend', tableItemsTemplate(list[item].id, list[item].brand, list[item].model, list[item].year));
+    }
+  }
+  console.log(list);
+  sortItems();
+  deleteItem();
+  editItem();
 }
 // Edit item / pushing this data into edit modal dropdowns
 const modalBrands = document.getElementById("modalBrands");
@@ -197,7 +208,7 @@ const saveButton = document.getElementById("saveButton");
 let modal = (document.getElementById("myModal"));
 let model, brand, year;
 const editItem = () => {
-  for (let button of editButtons){
+  for (let button of editButtons) {
     recreateNode(button);
   }
   for (let button of editButtons) {
@@ -205,26 +216,20 @@ const editItem = () => {
       modal.style.display = "block";
       modal.style.opacity = "1";
 
-      // //sending this button parrents data into edit modal
-
-      // modalContent.innerHTML = '';
-      // modalContent.insertAdjacentHTML('beforeend', editTemplate());
+      //sending this button parrents data into edit modal
       console.log(this.parentNode.parentNode.parentNode.children[0].id);
       brand = this.parentNode.parentNode.parentNode.children[0].innerHTML;
       model = this.parentNode.parentNode.parentNode.children[1].innerHTML;
       year = this.parentNode.parentNode.parentNode.children[2].innerHTML;
-      // console.log(this.parentNode.parentNode.parentNode.id);
-      // console.log(brand, model, year)
+      //
       const setdefault = new Event("change");
       for (let car in cars) {
         modalBrands.insertAdjacentHTML('beforeend', brandsTemplate(cars[car].brand));
         modalBrands.value = brand;
       }
       modalBrands.value = brand;
-      for(let car in cars){
+      for (let car in cars) {
         if ((cars[car].brand).toLowerCase() === brand.toLowerCase()) {
-          // console.log(cars[car].brand);
-          // console.log(brand);
           modalYear.value = year;
           modalYear.parentNode.parentNode.parentNode.id = this.parentNode.parentNode.parentNode.children[0].id;
         }
@@ -240,33 +245,21 @@ const saveItem = () => {
     event.preventDefault();
     let currentTable = table.children;
     //getting edited element
-    for (let element of currentTable) {
-      // console.log(element.children)
-      console.log(element.children[0].id);
-      console.log(modalYear.parentNode.parentNode.parentNode.id);
-      if (element.children[0].id === modalYear.parentNode.parentNode.parentNode.id) {
-        // console.log(modalYear.parentNode.parentNode.parentNode.id)
-        //changing item appeareance
-        // console.log(element.children[0].innerHTML, element.children[1].innerHTML, element.children[2].innerHTML);
-        // console.log(listData);
-        // element.children[0].innerHTML = modalBrands.value
-        // element.children[1].innerHTML = modalModels.value
-        // element.children[2].innerHTML = modalYear.value
-        
-        // console.log(listData);
-          listData[parseInt(modalYear.parentNode.parentNode.parentNode.id)].brand=  `${modalBrands.value}`;
-          listData[parseInt(modalYear.parentNode.parentNode.parentNode.id)].model= `${modalModels.value}`;
-          listData[parseInt(modalYear.parentNode.parentNode.parentNode.id)].year= `${modalYear.value}`;
-        
-        console.log(element.children[0].innerHTML, element.children[1].innerHTML, element.children[2].innerHTML);
-        console.log(listData);
-        // console.log(listData);
-        reloadList(listData);
+    for (let item in listData) {
+      if (parseInt(listData[item].id) === parseInt(modalYear.parentNode.parentNode.parentNode.id)) {
+        console.log(table.children[0])
+        console.log(listData[item].id);
+        console.log(modalYear.parentNode.parentNode.parentNode.id);
+        // changing this element data in listData
+        listData[parseInt(listData[item].id)].brand = `${modalBrands.value}`;
+        listData[parseInt(listData[item].id)].model = `${modalModels.value}`;
+        listData[parseInt(listData[item].id)].year = `${modalYear.value}`;
+        // reloading tableBody with updated list of items
+        reloadOnChange(listData);
         modal.style.display = "none";
         sortYear.value = "-";
       }
     }
-
     //reset filter value to avoid showing not fitted elements in filtered list
     //different option would be diptachEvent into filter eventListener but i wanted to differentiate these functions :)
     filterModels.value = "";
@@ -288,95 +281,138 @@ modalBrands.addEventListener('change', function () {
     }
   }
 })
-// Sort Aplhabetically fun for brands/models
-const sortAlphabetically = (list, prop) => {
-  let orderedList = [];
-  let i = 1;
-  for (let item in list) {
-    orderedList.push(list[item]);
-  }
-  orderedList.sort(getSortOrder(`${prop}`));
-  reloadList(orderedList);
-}
-const sortitems = () => {
+
+const sortItems = () => {
   sortBrand.addEventListener('click', function (event) {
-    sortAlphabetically(listData, "brand");
+    let items, itemsArr = [], itemsCopy;
+    for (let item in table.children) {
+      if (table.children[item].children) {
+        items = table.children[item].children[0].innerHTML;
+        itemsCopy = table.children[item].children[0].innerHTML;
+        itemsArr.push(items);
+        delete itemsCopy[items];
+      }
+      // console.log(items);
+      // console.log(typeof itemsCopy);
+    }
+
+    itemsArr.sort(function (a, b) {
+      return a == b
+        ? 0
+        : (a > b ? 1 : -1);
+    });
+    let array = [];
+    let check = [];
+    for (let element in table.children) {
+      for (let item in itemsArr) {
+        check.push(table.children[item].children[0].innerHTML)
+        if (itemsArr[element] === table.children[item].children[0].innerHTML) {
+          array.push(table.children[item]);
+        }
+      }
+    }
+    table.innerHTML = '';
+    for (let item in array) {
+      table.insertAdjacentElement('beforeend', array[item]);
+    }
+
   })
 
-  sortModel.addEventListener('click', function (event) {
-    sortAlphabetically(listData, "model");
+  sortModel.addEventListener('click', function () {
+    let items, itemsArr = [], itemsCopy;
+    for (let item in table.children) {
+      if (table.children[item].children) {
+        items = table.children[item].children[1].innerHTML;
+        itemsCopy = table.children[item].children[1].innerHTML;
+        itemsArr.push(items);
+        delete itemsCopy[items];
+      }
+    }
+    itemsArr.sort(function (a, b) {
+      return a == b
+        ? 0
+        : (a > b ? 1 : -1);
+    });
+    let array = [];
+    let check = [];
+    for (let element in table.children) {
+      for (let item in itemsArr) {
+        check.push(table.children[item].children[1].innerHTML)
+        if (itemsArr[element] === table.children[item].children[1].innerHTML) {
+          array.push(table.children[item]);
+        }
+      }
+    }
+    table.innerHTML = '';
+    for (let item in array) {
+      table.insertAdjacentElement('beforeend', array[item]);
+    }
   })
 
   sortYear.addEventListener('change', function (event) {
     event.preventDefault();
     let orderedList = [];
+    let items, itemsArr = [], itemsCopy;
+    for (let item in table.children) {
+      if (table.children[item].children) {
+        items = table.children[item].children[2].innerHTML;
+        itemsCopy = table.children[item].children[2].innerHTML;
+        itemsArr.push(items);
+        delete itemsCopy[items];
+      }
+    }
+
     if (sortYear.value === "old") {
-      for (let item in listData) {
-        orderedList.push(listData[item]);
+      itemsArr.sort(function (a, b) {
+        return a == b
+          ? 0
+          : (a > b ? 1 : -1);
+      });
+    }
+
+    else if (sortYear.value === "new") {
+      itemsArr.sort(function (a, b) {
+        return a == b
+          ? 0
+          : (a > b ? -1 : 1);
+      });
+    }
+    let array = [];
+    let check = [];
+    for (let element in table.children) {
+      for (let item in itemsArr) {
+        check.push(table.children[item].children[2].innerHTML)
+        if (itemsArr[element] === table.children[item].children[2].innerHTML) {
+          array.push(table.children[item]);
+        }
       }
-      orderedList.sort(getSortOrder(`year`));
-      for(let item in listData){
-        listData[item] = orderedList[item-1];
-      }
-      reloadList(listData);
-    } else if (sortYear.value === "new") {
-      for (let item in listData) {
-        orderedList.push(listData[item]);
-      }
-      orderedList.sort(getReverseSortOrder(`year`));
-      for(let item in listData){
-        listData[item] = orderedList[item-1];
-      }
-      reloadList(listData);
+    }
+    table.innerHTML = '';
+    for (let item in array) {
+      table.insertAdjacentElement('beforeend', array[item]);
     }
   });
 }
 // Dynamically filter models
 const filterModelsFunc = () => {
-  filterModels.addEventListener('keyup', function(){
-    let filteredModels=[];
-    for(let item in listData){
+  filterModels.addEventListener('keyup', function () {
+    let filteredModels = [];
+    for (let item in listData) {
       // I choosed startsWith(), but includes() is also an option here if we wanna see all models that contains certain phrase.
-      if((listData[item].model).toLowerCase().startsWith(filterModels.value)){
+      if ((listData[item].model).toLowerCase().startsWith(filterModels.value)) {
         filteredModels.push(listData[item])
       }
     }
     let tableContent = table.children;
-    for(let i=0; i<tableContent.length ; i++){
-      if((tableContent[i].children[1].innerHTML).toLowerCase().startsWith(filterModels.value)){
-        // console.log(tableContent[i])
-        // console.log(tableContent[i].id);
+    for (let i = 0; i < tableContent.length; i++) {
+      if ((tableContent[i].children[1].innerHTML).toLowerCase().startsWith(filterModels.value)) {
         tableContent[i].style.display = "flex";
       }
-      else if (!(tableContent[i].children[1].innerHTML).toLowerCase().startsWith(filterModels.value)){
+      else if (!(tableContent[i].children[1].innerHTML).toLowerCase().startsWith(filterModels.value)) {
         tableContent[i].style.display = "none";
       }
     }
   });
-}
-
-// Reload list
-const reloadList = (list) => {
-  counter = 0;
-  table.innerHTML = '';
-  let mockList = [];
-  for(let el in list){
-    mockList.push(list[el])
-  }
-  console.log(mockList);
-  for (var member in list) delete list[member];
-  for(let i = 1; i < mockList.length+1 ; i++){
-    list[i] = mockList[i-1];
-  }
-  console.log(list);
-  for (let item in list) {
-    if(item>=1){
-    table.insertAdjacentHTML('beforeend', tableItemsTemplate(list[item].id, list[item].brand, list[item].model, list[item].year));
-    }
-  }
-  console.log(list);
-  deleteItem();
-  editItem();
 }
 
 // APP INIT
@@ -397,6 +433,6 @@ const appInit = () => {
   editItem();
   dropdownBrands.dispatchEvent(setDefaultModels);
   filterModelsFunc();
-  sortitems();
+  sortItems();
 }
 appInit();
