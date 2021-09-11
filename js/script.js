@@ -12,18 +12,12 @@ const deleteButtons = document.getElementsByClassName("delete-button");
 const editButtons = document.getElementsByClassName("edit-button");
 const closeModal = document.getElementById("btn-close");
 const filterModels = document.getElementById("filterModels");
+const modalBrands = document.getElementById("modalBrands");
+const modalModels = document.getElementById("modalModels");
+const modalYear = document.getElementById("modalYear");
+const saveButton = document.getElementById("saveButton");
+const modal = (document.getElementById("myModal"));
 // SELECTORS ENDS //
-
-function recreateNode(el, withChildren) {
-  if (withChildren) {
-    el.parentNode.replaceChild(el.cloneNode(true), el);
-  }
-  else {
-    var newEl = el.cloneNode(false);
-    while (el.hasChildNodes()) newEl.appendChild(el.firstChild);
-    el.parentNode.replaceChild(newEl, el);
-  }
-}
 
 //*** GETTING INITIAL DATA ***//
 let listData = {};
@@ -151,7 +145,6 @@ submitButton.addEventListener('click', function (event) {
 
 // Delete Item //
 const deleteItem = () => {
-  // let carsIds = document.getElementsByClassName("carCounter")
   for (let button of deleteButtons) {
     button.addEventListener('click', function () {
       for (let item in listData) {
@@ -184,33 +177,26 @@ const reloadOnChange = (list) => {
   for (let el in list) {
     mockList.push(listData[el])
   }
-  console.log(mockList);
   for (var member in list) delete list[member];
   for (let item in mockList) {
     list[parseInt((mockList[item].id))] = mockList[item];
   }
-  console.log(list);
   for (let item in list) {
     if (item >= 1) {
       table.insertAdjacentHTML('beforeend', tableItemsTemplate(list[item].id, list[item].brand, list[item].model, list[item].year));
     }
   }
-  console.log(list);
-  sortItems();
+  for (let button of editButtons) {
+    let old_element = button;
+    let new_element = old_element.cloneNode(true);
+    old_element.parentNode.replaceChild(new_element, old_element);
+  }
   deleteItem();
   editItem();
 }
 // Edit item / pushing this data into edit modal dropdowns
-const modalBrands = document.getElementById("modalBrands");
-const modalModels = document.getElementById("modalModels");
-const modalYear = document.getElementById("modalYear");
-const saveButton = document.getElementById("saveButton");
-let modal = (document.getElementById("myModal"));
 let model, brand, year;
 const editItem = () => {
-  for (let button of editButtons) {
-    recreateNode(button);
-  }
   for (let button of editButtons) {
     button.addEventListener('click', function () {
       modal.style.display = "block";
@@ -225,9 +211,8 @@ const editItem = () => {
       const setdefault = new Event("change");
       for (let car in cars) {
         modalBrands.insertAdjacentHTML('beforeend', brandsTemplate(cars[car].brand));
-        modalBrands.value = brand;
+        modalBrands.value = this.parentNode.parentNode.parentNode.children[0].innerHTML;
       }
-      modalBrands.value = brand;
       for (let car in cars) {
         if ((cars[car].brand).toLowerCase() === brand.toLowerCase()) {
           modalYear.value = year;
@@ -235,7 +220,6 @@ const editItem = () => {
         }
       }
       modalBrands.dispatchEvent(setdefault);
-      modalBrands.value = brand;
     });
   }
 }
@@ -247,9 +231,6 @@ const saveItem = () => {
     //getting edited element
     for (let item in listData) {
       if (parseInt(listData[item].id) === parseInt(modalYear.parentNode.parentNode.parentNode.id)) {
-        console.log(table.children[0])
-        console.log(listData[item].id);
-        console.log(modalYear.parentNode.parentNode.parentNode.id);
         // changing this element data in listData
         listData[parseInt(listData[item].id)].brand = `${modalBrands.value}`;
         listData[parseInt(listData[item].id)].model = `${modalModels.value}`;
