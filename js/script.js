@@ -187,6 +187,7 @@ const reloadOnChange = (list) => {
   }
   deleteItem();
   editItem();
+  modalBrands.value = '';
 }
 // Edit item / pushing this data into edit modal dropdowns
 let model, brand, year;
