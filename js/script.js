@@ -21,7 +21,8 @@ const modal = (document.getElementById("myModal"));
 
 //*** GETTING INITIAL DATA ***//
 let listData = {};
-const listDataResponse = await axios.get('../initialModels.json')
+/*const listDataResponse = await axios.get('../initialModels.json')*/
+const listDataResponse = await axios.get("https://raw.githubusercontent.com/HudorHasHasHa/CarsList/master/initialModels.json")
   .catch(error => {
     console.log(error);
   })
@@ -29,7 +30,8 @@ listData = listDataResponse.data;
 
 //*** GETTING DATA FOR DROPDOWNS ***//
 let cars = [];
-await fetch('../modelOptions.json')
+// await fetch('../modelOptions.json')
+await fetch("https://raw.githubusercontent.com/HudorHasHasHa/CarsList/master/modelOptions.json")
   .then(response => response.json())
   .then(data => {
     return cars = data;
